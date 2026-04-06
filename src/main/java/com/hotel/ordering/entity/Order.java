@@ -43,6 +43,9 @@ public class Order {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(precision = 10, scale = 2) // Precision: 10 digits total, 2 decimal places.
+    private java.math.BigDecimal totalAmount; // The final bill amount (Subtotal + Tax).
+
     /**
      * @OneToMany: One Order contains MANY OrderItems (e.g., Pizza + Coke).
      * mappedBy: Tells JPA that the 'order' field in OrderItem "owns" this link.

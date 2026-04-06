@@ -1,6 +1,7 @@
 package com.hotel.ordering.controller; // Package for our web controller classes.
 
 import com.hotel.ordering.entity.Order; // Using our Order database model.
+import com.hotel.ordering.payload.response.BillResponse; // Our final receipt DTO.
 import com.hotel.ordering.service.OrderService; // Using our order business logic.
 import lombok.RequiredArgsConstructor; // Lombok: Injects dependencies automatically!
 import org.springframework.http.ResponseEntity; // Wrapper for HTTP responses.
@@ -61,5 +62,16 @@ public class OrderController { // The main class for order endpoints.
             @PathVariable Long id, // Order ID from URL.
             @RequestParam Order.OrderStatus status) { // New status from parameter.
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status)); // Updates and returns.
+    }
+
+    /**
+     * checkoutOrder: [POST] /api/orders/{id}/checkout
+     * @PreAuthorize: Only WAITERS and ADMINs can close an order and generate a bill.
+     */
+    @PostMapping("/{id}/checkout") // URL e.g.: /api/orders/101/checkout
+    @PreAuthorize("hasAnyRole('ADMIN', 'WAITER')") // SECURITY: Kitchen staff cannot checkout guests!
+    public ResponseEntity<BillResponse> checkoutOrder(@PathVariable Long id) { // Takes ID from URL.
+        // Calls the service to calculate GST, free the table, and generate the bill JSON.
+        return ResponseEntity.ok(orderService.checkoutOrder(id)); 
     }
 }
