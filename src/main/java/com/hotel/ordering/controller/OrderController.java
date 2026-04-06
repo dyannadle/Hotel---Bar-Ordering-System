@@ -1,59 +1,65 @@
-package com.hotel.ordering.controller;
+package com.hotel.ordering.controller; // Package for our web controller classes.
 
-import com.hotel.ordering.entity.Order;
-import com.hotel.ordering.service.OrderService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.hotel.ordering.entity.Order; // Using our Order database model.
+import com.hotel.ordering.service.OrderService; // Using our order business logic.
+import lombok.RequiredArgsConstructor; // Lombok: Injects dependencies automatically!
+import org.springframework.http.ResponseEntity; // Wrapper for HTTP responses.
+import org.springframework.security.access.prepost.PreAuthorize; // Role-Based Access Control.
+import org.springframework.web.bind.annotation.*; // Standard Spring Web annotations.
 
-import java.util.List;
+import java.util.List; // For returning lists of items.
 
 /**
  * OrderController: Handles all web requests related to orders.
  * All URLs start with /api/orders.
  */
-@RestController
-@RequestMapping("/api/orders")
-@RequiredArgsConstructor
-public class OrderController {
+@RestController // Marks this as a REST API controller.
+@RequestMapping("/api/orders") // Sets the base URL path to /api/orders.
+@RequiredArgsConstructor // Automatically creates a constructor for our private final fields!
+public class OrderController { // The main class for order endpoints.
 
-    private final OrderService orderService;
+    // The service that handles our ordering logic.
+    private final OrderService orderService; 
 
     /**
      * getOrdersByStatus: [GET] /api/orders?status=PLACED
-     * Fetches all orders with a specific status for the kitchen screen.
+     * @PreAuthorize: Admin, Waiter, and Kitchen Staff can all see order lists.
      */
-    @GetMapping
-    public ResponseEntity<List<Order>> getOrdersByStatus(@RequestParam Order.OrderStatus status) {
-        return ResponseEntity.ok(orderService.getOrdersByStatus(status));
+    @GetMapping // Maps HTTP GET requests to this method.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WAITER', 'KITCHEN_STAFF')") // SECURITY: Most staff can view order lists.
+    public ResponseEntity<List<Order>> getOrdersByStatus(@RequestParam Order.OrderStatus status) { 
+        return ResponseEntity.ok(orderService.getOrdersByStatus(status)); // Returns matching orders.
     }
 
     /**
      * getOrderById: [GET] /api/orders/{id}
-     * Returns the full details (including items) of one order.
+     * Any authenticated staff member can see the details of a specific order.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        return ResponseEntity.ok(orderService.getOrderById(id));
+    @GetMapping("/{id}") // URL e.g.: /api/orders/101
+    @PreAuthorize("hasAnyRole('ADMIN', 'WAITER', 'KITCHEN_STAFF')") // SECURITY: Any logged-in staff can view details.
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id) { 
+        return ResponseEntity.ok(orderService.getOrderById(id)); // Returns the order details.
     }
 
     /**
      * placeOrder: [POST] /api/orders
-     * Takes an order from a waiter and saves it.
+     * @PreAuthorize: Only WAITERS and ADMINs can place a new order.
      */
-    @PostMapping
-    public ResponseEntity<Order> placeOrder(@RequestBody Order order) {
-        return ResponseEntity.ok(orderService.placeOrder(order));
+    @PostMapping // Maps HTTP POST requests to this method.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WAITER')") // SECURITY: Kitchen staff cannot place new orders!
+    public ResponseEntity<Order> placeOrder(@RequestBody Order order) { // Accepts the order JSON.
+        return ResponseEntity.ok(orderService.placeOrder(order)); // Saves and returns the new order.
     }
 
     /**
      * updateOrderStatus: [PATCH] /api/orders/{id}/status?status=SERVED
-     * Allows the kitchen or waiter to update the progress of an order.
+     * @PreAuthorize: Everyone can update status (Waiters for 'SERVED', Kitchen for 'PREPARING').
      */
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{id}/status") // Maps HTTP PATCH requests for updating status.
+    @PreAuthorize("hasAnyRole('ADMIN', 'WAITER', 'KITCHEN_STAFF')") // SECURITY: All staff can push the order lifecycle.
     public ResponseEntity<Order> updateOrderStatus(
-            @PathVariable Long id, 
-            @RequestParam Order.OrderStatus status) {
-        return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
+            @PathVariable Long id, // Order ID from URL.
+            @RequestParam Order.OrderStatus status) { // New status from parameter.
+        return ResponseEntity.ok(orderService.updateOrderStatus(id, status)); // Updates and returns.
     }
 }
