@@ -6,26 +6,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The RestaurantTable entity represents the physical tables in our hotel/bar.
+ * RestaurantTable: Represents the physical tables in our hospitality business.
+ * @Entity: Maps this class to the database table 'restaurant_tables'.
  */
 @Entity
 @Table(name = "restaurant_tables")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Data // Lombok: No more manual Getters and Setters!
+@NoArgsConstructor // JPA requirement
+@AllArgsConstructor // For easy table creation
 public class RestaurantTable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id // The ID column (Primary Key)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-incrementing column
     private Long id;
 
-    @Column(name = "table_number", nullable = false, unique = true)
+    @Column(name = "table_number", nullable = false, unique = true) // Column name and requirement
     private Integer tableNumber;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) // Saves status as 'AVAILABLE' in database
     @Column(nullable = false)
     private TableStatus status = TableStatus.AVAILABLE;
 
+    // The two possible states for a restaurant table.
     public enum TableStatus {
         AVAILABLE, OCCUPIED
     }

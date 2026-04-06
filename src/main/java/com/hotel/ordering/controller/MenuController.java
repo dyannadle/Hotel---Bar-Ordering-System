@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * The MenuController provides REST API endpoints for our menu.
- * @RestController: Marks this as a RESTful controller, so it returns JSON by default.
- * @RequestMapping: Defines the base URL for all endpoints in this class.
+ * MenuController: Defines the API endpoints for our hospitality menu.
+ * @RestController: Tells Spring to convert our Java objects into JSON for the web.
+ * @RequestMapping: Every endpoint in this class starts with /api/menu.
  */
 @RestController
 @RequestMapping("/api/menu")
@@ -21,8 +21,8 @@ public class MenuController {
     private final MenuItemService menuItemService;
 
     /**
-     * Get all menu items.
-     * @GetMapping: Maps HTTP GET requests to this method.
+     * getAllMenuItems: Called when someone visits [GET] /api/menu.
+     * Returns the full list of food and drinks.
      */
     @GetMapping
     public ResponseEntity<List<MenuItem>> getAllMenuItems() {
@@ -30,7 +30,8 @@ public class MenuController {
     }
 
     /**
-     * Get all available menu items.
+     * getAvailableMenuItems: Called when someone visits [GET] /api/menu/available.
+     * Returns only items that are currently in stock.
      */
     @GetMapping("/available")
     public ResponseEntity<List<MenuItem>> getAvailableMenuItems() {
@@ -38,7 +39,8 @@ public class MenuController {
     }
 
     /**
-     * Get menu items by category.
+     * getMenuItemsByCategory: Returns items of a specific type (e.g. BEVERAGE).
+     * @PathVariable: Extracts the category name directly from the URL.
      */
     @GetMapping("/category/{category}")
     public ResponseEntity<List<MenuItem>> getMenuItemsByCategory(@PathVariable MenuItem.Category category) {
@@ -46,8 +48,8 @@ public class MenuController {
     }
 
     /**
-     * Add a new menu item.
-     * @PostMapping: Maps HTTP POST requests to this method.
+     * addMenuItem: Called when an Admin adds a new dish [POST] /api/menu.
+     * @RequestBody: Converts the incoming JSON data into a Java MenuItem object.
      */
     @PostMapping
     public ResponseEntity<MenuItem> addMenuItem(@RequestBody MenuItem item) {
@@ -55,8 +57,7 @@ public class MenuController {
     }
 
     /**
-     * Delete a menu item by ID.
-     * @DeleteMapping: Maps HTTP DELETE requests to this method.
+     * deleteMenuItem: Removes a dish from the system [DELETE] /api/menu/{id}.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMenuItem(@PathVariable Long id) {

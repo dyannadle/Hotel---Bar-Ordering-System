@@ -9,17 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * The TableController provides REST API endpoints for our restaurant tables.
+ * TableController: Manages all table-related API endpoints.
+ * All URLs in this class start with /api/tables.
  */
 @RestController
 @RequestMapping("/api/tables")
 @RequiredArgsConstructor
 public class TableController {
 
+    // Injecting our TableService to handle the logic.
     private final TableService tableService;
 
     /**
-     * Get all tables.
+     * getAllTables: Returns a list of all tables in the restaurant [GET] /api/tables.
      */
     @GetMapping
     public ResponseEntity<List<RestaurantTable>> getAllTables() {
@@ -27,7 +29,7 @@ public class TableController {
     }
 
     /**
-     * Get only available tables.
+     * getAvailableTables: Returns only the free tables [GET] /api/tables/available.
      */
     @GetMapping("/available")
     public ResponseEntity<List<RestaurantTable>> getAvailableTables() {
@@ -35,7 +37,8 @@ public class TableController {
     }
 
     /**
-     * Get a table by number.
+     * getTableByNumber: Finds a specific table using its number (e.g., Table 1).
+     * Returns 404 NOT FOUND if the table doesn't exist.
      */
     @GetMapping("/number/{number}")
     public ResponseEntity<RestaurantTable> getTableByNumber(@PathVariable Integer number) {
@@ -45,7 +48,7 @@ public class TableController {
     }
 
     /**
-     * Add a new table.
+     * addTable: Adds a new table to the database [POST] /api/tables.
      */
     @PostMapping
     public ResponseEntity<RestaurantTable> addTable(@RequestBody RestaurantTable table) {
@@ -53,7 +56,8 @@ public class TableController {
     }
 
     /**
-     * Update table status (e.g. set to OCCUPIED).
+     * updateTableStatus: Updates whether a table is AVAILABLE or OCCUPIED.
+     * @PatchMapping: Used for partial updates (we're only changing the status).
      */
     @PatchMapping("/{id}/status")
     public ResponseEntity<RestaurantTable> updateTableStatus(
@@ -63,7 +67,7 @@ public class TableController {
     }
 
     /**
-     * Delete a table by ID.
+     * deleteTable: Removes a table from the system [DELETE] /api/tables/{id}.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTable(@PathVariable Long id) {

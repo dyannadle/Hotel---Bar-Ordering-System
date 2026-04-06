@@ -8,18 +8,19 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The RestaurantTableRepository interface handles database interaction for the restaurant_tables table.
+ * RestaurantTableRepository: Interface for managing physical tables.
  */
-@Repository
+@Repository // Marks this as a repository component.
 public interface RestaurantTableRepository extends JpaRepository<RestaurantTable, Long> {
 
     /**
-     * Find a table by its unique table number.
+     * findByTableNumber: Custom query to find a specific table by its unique number.
+     * Returns an Optional to avoid NullPointerException!
      */
     Optional<RestaurantTable> findByTableNumber(Integer tableNumber);
 
     /**
-     * Find all tables with a specific status (e.g. AVAILABLE).
+     * findByStatus: Find all available or all occupied tables.
      */
     List<RestaurantTable> findByStatus(RestaurantTable.TableStatus status);
 }

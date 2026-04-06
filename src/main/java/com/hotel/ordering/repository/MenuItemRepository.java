@@ -7,20 +7,21 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * The MenuItemRepository interface handles database interaction for the menu_items table.
- * By extending JpaRepository, we get methods like save(), findById(), delete(), and more for free!
+ * JpaRepository: A Spring Data magic interface. By extending it, we get logic for 
+ * Saving, Updating, Finding, and Deleting records for free!
  */
-@Repository
+@Repository // Marks this interface as a data-access component.
 public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
 
     /**
-     * Find all menu items by their category.
-     * Spring Data JPA is smart enough to generate the query automatically based on the method name!
+     * findByCategory: Automatically generated SQL query by Spring Data.
+     * It finds all dishes belonging to a specific category (e.g. BEVERAGE).
      */
     List<MenuItem> findByCategory(MenuItem.Category category);
 
     /**
-     * Find all menu items that are currently available.
+     * findByAvailableTrue: Automatically generates a query to fetch all 
+     * dishes where 'available' = true.
      */
     List<MenuItem> findByAvailableTrue();
 }

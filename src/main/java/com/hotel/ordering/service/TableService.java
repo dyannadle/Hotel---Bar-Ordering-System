@@ -10,37 +10,40 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The TableService handles all business logic related to our restaurant tables.
+ * TableService: Handles the logic for our restaurant's physical tables.
+ * @Service: Tells Spring that this is a service component.
+ * @RequiredArgsConstructor: Injects our table repository automatically.
  */
 @Service
 @RequiredArgsConstructor
 public class TableService {
 
+    // Final field being injected by Lombok's @RequiredArgsConstructor.
     private final RestaurantTableRepository tableRepository;
 
     /**
-     * Get all tables from the database.
+     * getAllTables: Returns every table listed in our database.
      */
     public List<RestaurantTable> getAllTables() {
         return tableRepository.findAll();
     }
 
     /**
-     * Get only available tables.
+     * getAvailableTables: Filters the list to show only empty (AVAILABLE) tables.
      */
     public List<RestaurantTable> getAvailableTables() {
         return tableRepository.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
     }
 
     /**
-     * Find a table by its number.
+     * getTableByNumber: Searches for a table by its unique number (e.g. Table 5).
      */
     public Optional<RestaurantTable> getTableByNumber(Integer tableNumber) {
         return tableRepository.findByTableNumber(tableNumber);
     }
 
     /**
-     * Add a new table to the system.
+     * addTable: Adds a new physical table to our system.
      */
     @Transactional
     public RestaurantTable addTable(RestaurantTable table) {
@@ -48,18 +51,21 @@ public class TableService {
     }
 
     /**
-     * Update the status of a table (e.g. set to OCCUPIED when a guest arrives).
+     * updateTableStatus: Changes a table's status (e.g. from AVAILABLE to OCCUPIED).
      */
     @Transactional
     public RestaurantTable updateTableStatus(Long id, RestaurantTable.TableStatus status) {
+        // Find the table by ID, or throw an error if it doesn't exist.
         RestaurantTable table = tableRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Table not found with id: " + id));
+        
+        // Update the status and save it back to MySQL.
         table.setStatus(status);
         return tableRepository.save(table);
     }
 
     /**
-     * Delete a table by its ID.
+     * deleteTable: Removes a table from the system by its ID.
      */
     @Transactional
     public void deleteTable(Long id) {

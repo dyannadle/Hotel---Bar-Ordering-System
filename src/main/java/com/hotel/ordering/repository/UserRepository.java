@@ -7,19 +7,18 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * The UserRepository interface handles database interaction for the users table.
+ * UserRepository: Interface for managing staff authentication data.
  */
-@Repository
+@Repository // Repository component
 public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
-     * Find a user by their unique username. 
-     * Crucial for authentication during login.
+     * findByUsername: Used for login. If the user exists, it returns them.
      */
     Optional<User> findByUsername(String username);
 
     /**
-     * Check if a username already exists.
+     * existsByUsername: Quick check to see if a username is already taken.
      */
     Boolean existsByUsername(String username);
 }

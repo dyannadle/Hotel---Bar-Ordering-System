@@ -9,40 +9,41 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * The MenuItemService handles all business logic related to our menu.
- * @Service: Tells Spring that this is a service component.
- * @RequiredArgsConstructor: A Lombok annotation that creates a constructor for our repository automatically!
+ * MenuItemService: Where the "business logic" for our menu lives.
+ * @Service: Marks this as a service class that Spring can manage.
+ * @RequiredArgsConstructor: Lombok magic that injects our repository via a constructor.
  */
 @Service
 @RequiredArgsConstructor
 public class MenuItemService {
 
+    // Final field: injected automatically through the constructor.
     private final MenuItemRepository menuItemRepository;
 
     /**
-     * Get all menu items from the database.
+     * getAllMenuItems: Fetches every single item from the database.
      */
     public List<MenuItem> getAllMenuItems() {
         return menuItemRepository.findAll();
     }
 
     /**
-     * Get only available menu items.
+     * getAvailableMenuItems: Fetches only the items that are currently in stock.
      */
     public List<MenuItem> getAvailableMenuItems() {
         return menuItemRepository.findByAvailableTrue();
     }
 
     /**
-     * Get items by their category (e.g. STARTERS).
+     * getMenuItemsByCategory: Filters the menu by a specific category (e.g. STARTER).
      */
     public List<MenuItem> getMenuItemsByCategory(MenuItem.Category category) {
         return menuItemRepository.findByCategory(category);
     }
 
     /**
-     * Add a new menu item.
-     * @Transactional: Ensures that either the entire operation succeeds or it fails and rolls back.
+     * addMenuItem: Saves a new dish to our hotel's menu.
+     * @Transactional: Ensures the database operation is "all or nothing".
      */
     @Transactional
     public MenuItem addMenuItem(MenuItem item) {
@@ -50,7 +51,7 @@ public class MenuItemService {
     }
 
     /**
-     * Delete a menu item by its ID.
+     * deleteMenuItem: Removes a dish from the menu by its ID.
      */
     @Transactional
     public void deleteMenuItem(Long id) {
