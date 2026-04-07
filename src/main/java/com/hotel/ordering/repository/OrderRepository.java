@@ -29,4 +29,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
      * by excluding 'COMPLETED' or 'CANCELLED' status.
      */
     List<Order> findByTableAndStatusNot(RestaurantTable table, Order.OrderStatus status);
+
+    /**
+     * findByTableAndStatusIn: Finds all orders at a table that have any of the provided statuses.
+     */
+    List<Order> findByTableAndStatusIn(RestaurantTable table, List<Order.OrderStatus> statuses);
 }

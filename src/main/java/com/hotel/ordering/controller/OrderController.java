@@ -64,8 +64,15 @@ public class OrderController { // The main class for order endpoints.
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status)); // Updates and returns.
     }
 
+    @GetMapping("/active/table/{tableNumber}") // URL: /api/orders/active/table/{tableNumber}
+    @PreAuthorize("hasRole('WAITER') or hasRole('ADMIN')") // Both Waiters and Admins can see live orders.
+    public ResponseEntity<?> getActiveOrderForTable(@PathVariable Integer tableNumber) {
+        // Return the current bill and items for the table!
+        return ResponseEntity.ok(orderService.getActiveOrderForTable(tableNumber));
+    }
+
     /**
-     * checkoutOrder: [POST] /api/orders/{id}/checkout
+     * checkoutOrder: Performs final billing ([POST] /api/orders/{id}/checkout).
      * @PreAuthorize: Only WAITERS and ADMINs can close an order and generate a bill.
      */
     @PostMapping("/{id}/checkout") // URL e.g.: /api/orders/101/checkout

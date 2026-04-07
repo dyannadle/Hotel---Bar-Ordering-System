@@ -62,6 +62,9 @@ public class OrderService { // The service class for all hotel orders.
         
         order.setTotalAmount(subtotal); // Set the current total.
         order.setStatus(Order.OrderStatus.PLACED); // Set the starting status.
+        
+        // We'll also store the customer phone number if the waiter provided it.
+        // It's already in the 'order' object from the API request!
 
         // 5. Save the order. All items are saved too because of 'CascadeType.ALL'!
         return orderRepository.save(order); // Return the final saved order.
@@ -128,6 +131,7 @@ public class OrderService { // The service class for all hotel orders.
         return BillResponse.builder() // Using Lombok Builder pattern...
                 .orderId(order.getId()) // ID of the order.
                 .tableNumber(table.getTableNumber()) // Table number (matched to entity!).
+                .customerPhone(order.getCustomerPhone()) // Include guest's phone on the final bill!
                 .subtotal(subtotal) // Pre-tax money.
                 .gstAmount(gstAmount) // Tax money.
                 .grandTotal(grandTotal) // Final amount guest pays.
@@ -147,6 +151,46 @@ public class OrderService { // The service class for all hotel orders.
      */
     public List<Order> getOrdersByStatus(Order.OrderStatus status) { // Takes status enum.
         return orderRepository.findByStatus(status); // Returns results from MySQL.
+    }
+
+    /**
+     * getActiveOrderForTable: Finds what a customer is currently eating by table number.
+     * This fulfills the requirement: "Items on tables are visible".
+     */
+    public BillResponse getActiveOrderForTable(Integer tableNumber) { 
+        // 1. Find the table by its number (e.g. Table 5).
+        RestaurantTable table = tableRepository.findByTableNumber(tableNumber)
+                .orElseThrow(() -> new RuntimeException("Table " + tableNumber + " not found!"));
+
+        // 2. Look for an active (non-completed) order at this table.
+        // We look for any order that ISN'T COMPLETED or CANCELLED.
+        Order order = orderRepository.findByTableAndStatusIn(table, 
+                List.of(Order.OrderStatus.PLACED, Order.OrderStatus.PREPARING, Order.OrderStatus.SERVED))
+                .stream().findFirst()
+                .orElseThrow(() -> new RuntimeException("No active order found for Table " + tableNumber));
+
+        // 3. Reuse our billing calculation logic to show the "Current Bill" to the waiter.
+        BigDecimal subtotal = calculateSubtotal(order.getId());
+        BigDecimal gstAmount = subtotal.multiply(new BigDecimal(gstRate))
+                .divide(new BigDecimal(100), 2, RoundingMode.HALF_UP);
+        BigDecimal grandTotal = subtotal.add(gstAmount);
+
+        return BillResponse.builder()
+                .orderId(order.getId())
+                .tableNumber(table.getTableNumber())
+                .customerPhone(order.getCustomerPhone())
+                .subtotal(subtotal)
+                .gstAmount(gstAmount)
+                .grandTotal(grandTotal)
+                .items(order.getItems().stream()
+                    .map(item -> BillResponse.OrderItemResponse.builder()
+                        .itemName(item.getMenuItem().getName())
+                        .quantity(item.getQuantity())
+                        .price(item.getPricePerUnit())
+                        .subtotal(item.getSubtotal())
+                        .build())
+                    .collect(Collectors.toList()))
+                .build();
     }
 
     /**

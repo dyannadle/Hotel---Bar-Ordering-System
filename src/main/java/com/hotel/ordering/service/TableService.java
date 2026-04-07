@@ -47,6 +47,16 @@ public class TableService {
      */
     @Transactional
     public RestaurantTable addTable(RestaurantTable table) {
+        // Validate that the table number is unique to avoid 500 Data Integrity Errors
+        if (tableRepository.findByTableNumber(table.getTableNumber()).isPresent()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, 
+                    "Table number " + table.getTableNumber() + " already exists!");
+        }
+        
+        // Ensure a new record is created even if the client mistakenly provides an ID
+        table.setId(null); 
+        
         return tableRepository.save(table);
     }
 

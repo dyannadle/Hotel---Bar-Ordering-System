@@ -46,6 +46,9 @@ public class Order {
     @Column(precision = 10, scale = 2) // Precision: 10 digits total, 2 decimal places.
     private java.math.BigDecimal totalAmount; // The final bill amount (Subtotal + Tax).
 
+    @Column(length = 20) // Customer phone number (No strict validation as requested).
+    private String customerPhone; // Stores the guest's contact number for the bill.
+
     /**
      * @OneToMany: One Order contains MANY OrderItems (e.g., Pizza + Coke).
      * mappedBy: Tells JPA that the 'order' field in OrderItem "owns" this link.

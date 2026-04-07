@@ -17,6 +17,8 @@ public class BillResponse { // The response object class for checking out.
 
     private Integer tableNumber; // The table where the guests ate.
 
+    private String customerPhone; // The guest's contact number on the final bill.
+
     private List<OrderItemResponse> items; // List of foods and drinks they ordered.
 
     private BigDecimal subtotal; // Total cost BEFORE tax.

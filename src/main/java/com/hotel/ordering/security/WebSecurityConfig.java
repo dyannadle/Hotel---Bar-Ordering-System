@@ -86,7 +86,7 @@ public class WebSecurityConfig { // The main configuration class.
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Tell Spring NOT to use sessions (Cookies).
         .authorizeHttpRequests(auth -> // Define URL rules...
           auth.requestMatchers("/api/auth/**").permitAll() // Allow everyone to Login/Signup.
-              .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll() // Allow everyone to see API docs.
+              .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll() // Allow everyone to see API docs and errors.
               .anyRequest().authenticated() // EVERY OTHER request requires a valid JWT!
         );
     

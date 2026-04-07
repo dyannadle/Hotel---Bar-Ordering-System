@@ -50,7 +50,8 @@ public class JwtUtils { // Utility class for JWT operations.
      * key: Converts our text-based secret from properties into a real Cryptographic Key.
      */
     private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)); // Decodes Base64 and creates the key.
+        // We use the raw bytes of our secret string to create the HMAC-SHA key.
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes()); 
     }
 
     /**

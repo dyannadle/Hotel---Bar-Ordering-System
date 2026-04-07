@@ -16,6 +16,7 @@ com\hotel\ordering\entity\MenuItem$Category.class
 com\hotel\ordering\security\jwt\JwtUtils.class
 com\hotel\ordering\entity\Order.class
 com\hotel\ordering\HotelOrderingApplication.class
+com\hotel\ordering\config\DataInitializer.class
 com\hotel\ordering\service\UserDetailsServiceImpl.class
 com\hotel\ordering\entity\MenuItem.class
 com\hotel\ordering\service\UserDetailsImpl.class
